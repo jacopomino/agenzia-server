@@ -2,6 +2,9 @@ import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import { MongoClient,ObjectId } from "mongodb"
+import multer from "multer"
+import {readFileSync} from 'fs'
+import path from "path"
 
 
 const PORT = process.env.PORT|| 3001;
@@ -11,7 +14,22 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.listen(PORT,()=>{
     console.log("run");
 })
-
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads');
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+      cb(null, true);
+  } else {
+      cb(null, false);
+  }
+}
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 app.get("/aste", async (req,res)=>{
     MongoClient.connect("mongodb+srv://apo:jac2001min@cluster0.pdunp.mongodb.net/player?retryWrites=true&w=majority", function(err, db) {
       if (err) throw err;
@@ -102,5 +120,15 @@ app.put("/sendIdealista", async (req,res)=>{
       if (err) throw err;
     });
   });
+})
+app.post('/profile/:id', upload.single('avatar'), function (req, res) {
+  MongoClient.connect("mongodb+srv://apo:jac2001min@cluster0.pdunp.mongodb.net/?retryWrites=true&w=majority", function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("aste");
+    dbo.collection("aste").updateOne({_id:new ObjectId(req.params.id)},{$push:{images:readFileSync(req.file.path).toString("base64")}},(err,result)=>{
+      if (err) throw err;
+    })
+  })
+  res.redirect("http://localhost:3000/gestionale/1")
 })
 
