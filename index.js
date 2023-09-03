@@ -2,10 +2,9 @@ import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import { MongoClient,ObjectId } from "mongodb"
-//import fs from 'fs'
+import fs from 'fs'
 import path from "path"
-//import pdf from "pdf-poppler"
-//import axios from "axios"
+import pdftoimg from "pdf-img-convert"
 import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -74,6 +73,23 @@ app.put("/sendIdealista", async (req,res)=>{
 })
 app.put('/profile/:id',async function(req, res) {
   let info=JSON.parse(Object.keys(req.body)[0]);
+  const filename="img-"
+  if(!fs.existsSync("./uploads/"+info.itemid)){
+    fs.mkdirSync("./uploads/"+info.itemid)
+    pdftoimg.convert(info.url).then(function(outputImages) {
+      for (let i = 0; i < outputImages.length; i++){
+        fs.writeFileSync("./uploads/"+info.itemid+"/"+filename+i+".png", outputImages[i]);
+        let client=new MongoClient("mongodb://apo:jac2001min@cluster0-shard-00-00.pdunp.mongodb.net:27017,cluster0-shard-00-01.pdunp.mongodb.net:27017,cluster0-shard-00-02.pdunp.mongodb.net:27017/?ssl=true&replicaSet=atlas-me2tz8-shard-0&authSource=admin&retryWrites=true&w=majority")
+        client.db("aste").collection("aste").updateOne({_id:new ObjectId(info.itemid)},{$push:{images:filename+i+".png"}})
+      }
+    }).then(()=>{
+      res.send("ok")
+    }).catch(error => {
+      res.status(203).send(error)
+    });
+  }else{
+    res.status(203).send("Hai già aggiunto queste immagini")
+  }
   /*let pdfBuffer = await axios({url: info.url, method: "get",responseType: 'arraybuffer'});
   const filename=Date.now()+"PdfFile"
   if(!fs.existsSync("./uploads/"+info.itemid)){
