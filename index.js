@@ -5,7 +5,7 @@ import { MongoClient,ObjectId } from "mongodb"
 import fs from 'fs'
 import path from "path"
 import pdf from "pdf-poppler"
-import request from "request-promise-native"
+import axios from "axios"
 import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -74,10 +74,10 @@ app.put("/sendIdealista", async (req,res)=>{
 })
 app.put('/profile/:id',async function(req, res) {
   let info=JSON.parse(Object.keys(req.body)[0]);
-  let pdfBuffer = await request.get({uri: info.url, encoding: null});
+  let pdfBuffer = await axios({url: info.url, method: "get",responseType: 'arraybuffer'});
   const filename=Date.now()+"PdfFile"
   if(!fs.existsSync("./uploads/"+info.itemid)){
-    fs.writeFileSync("./uploads/"+filename+".pdf", pdfBuffer);
+    fs.writeFileSync("./uploads/"+filename+".pdf", pdfBuffer.data);
     fs.mkdirSync("./uploads/"+info.itemid)
     let opts = {
       format: 'jpeg',
