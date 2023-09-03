@@ -2,10 +2,10 @@ import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import { MongoClient,ObjectId } from "mongodb"
-import fs from 'fs'
+//import fs from 'fs'
 import path from "path"
-import pdf from "pdf-poppler"
-import axios from "axios"
+//import pdf from "pdf-poppler"
+//import axios from "axios"
 import { fileURLToPath } from "url"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -74,7 +74,7 @@ app.put("/sendIdealista", async (req,res)=>{
 })
 app.put('/profile/:id',async function(req, res) {
   let info=JSON.parse(Object.keys(req.body)[0]);
-  let pdfBuffer = await axios({url: info.url, method: "get",responseType: 'arraybuffer'});
+  /*let pdfBuffer = await axios({url: info.url, method: "get",responseType: 'arraybuffer'});
   const filename=Date.now()+"PdfFile"
   if(!fs.existsSync("./uploads/"+info.itemid)){
     fs.writeFileSync("./uploads/"+filename+".pdf", pdfBuffer.data);
@@ -100,7 +100,7 @@ app.put('/profile/:id',async function(req, res) {
     })
   }else{
     res.status(203).send("Hai già aggiunto queste immagini")
-  }
+  }*/
 })
 //mostra foto profilo
 app.get('/mostraFoto/:foldername/:filename',function (req, res) {
