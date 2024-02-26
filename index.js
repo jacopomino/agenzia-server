@@ -27,6 +27,9 @@ app.get("/aste", async (req,res)=>{
 app.get("/gestionale", async (req,res)=>{
   client.db("aste").collection("aste").find({controllate:false,inserite:false}).toArray().then(e=>res.send(e))
 })
+app.get("/gestionale-attesa", async (req,res)=>{
+  client.db("aste").collection("aste").find({controllate:true,inserite:false}).toArray().then(e=>res.send(e))
+})
 app.put("/sendIdealista", async (req,res)=>{
   let info=req.body
   client.db("aste").collection("aste").find({_id:new ObjectId(info.id)}).toArray().then(result=>{
