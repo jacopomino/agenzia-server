@@ -35,13 +35,13 @@ app.put("/sendIdealista", async (req,res)=>{
   client.db("aste").collection("aste").find({_id:new ObjectId(info.id)}).toArray().then(result=>{
     if(result){
       result[0].commento=info.commento
-      result[0].info['Data di vendita']=info.dataA
-      result[0].info["Prezzo base d'asta "]=info.prezzoB
-      result[0].info['Offerta minima']=info.offertaM
-      result[0].info.Tribunale=info.tribunale
+      result[0].info['data di vendita']=info.dataA
+      result[0].info["prezzo base d'asta "]=info.prezzoB
+      result[0].info['offerta minima']=info.offertaM
+      result[0].info.tribunale=info.tribunale
       result[0].altro.via=info.via
-      result[0].altro.altro["Superficie"]=info.superficie
-      result[0].altro.altro["Vani"]=info.locali
+      result[0].altro.altro["superficie"]=info.superficie
+      result[0].altro.altro["vani"]=info.locali
       result[0].controllate=true
       client.db("aste").collection("aste").replaceOne({_id:new ObjectId(info.id)},result[0]).then(e=>{
         if(e){
