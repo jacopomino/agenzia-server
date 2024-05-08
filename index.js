@@ -30,6 +30,9 @@ app.get("/gestionale", async (req,res)=>{
 app.get("/gestionale-attesa", async (req,res)=>{
   client.db("aste").collection("aste").find({controllate:true,inserite:false}).toArray().then(e=>res.send(e))
 })
+app.delete("/cancellaTutte-asteNuove", async (req,res)=>{
+  client.db("aste").collection("aste").deleteMany({controllate:false,inserite:false}).then(e=>res.send(e))
+})
 app.put("/sendIdealista", async (req,res)=>{
   let info=req.body
   client.db("aste").collection("aste").find({_id:new ObjectId(info.id)}).toArray().then(result=>{
@@ -78,6 +81,16 @@ app.put("/sendIdealista", async (req,res)=>{
   res.send("ok")*/
   })
 })
+app.delete("/cancella-asta", async (req,res)=>{
+  let info=req.body
+  client.db("aste").collection("aste").deleteOne({_id:new ObjectId(info.itemid)}).then(e=>{
+    if(e){
+      res.send("ok")
+    }else{
+        res.status(203).send("Something went wrong, try again!")
+    }
+  })
+})
 app.put('/profile/:id',async function(req, res) {
   let info=req.body
   const filename="img-"
@@ -102,4 +115,3 @@ app.put('/profile/:id',async function(req, res) {
 app.get('/mostraFoto/:foldername/:filename',function (req, res) {
   res.sendFile("/uploads/"+req.params.foldername+"/"+req.params.filename,{ root: __dirname })
 })
-
