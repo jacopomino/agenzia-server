@@ -91,6 +91,16 @@ app.delete("/cancella-asta", async (req,res)=>{
     }
   })
 })
+app.put("/cancella-astaInserita", async (req,res)=>{
+  let info=req.body
+  client.db("aste").collection("aste").updateOne({_id:new ObjectId(info.itemid)},{$set:{eliminate:true}}).then(e=>{
+    if(e){
+      res.send("ok")
+    }else{
+        res.status(203).send("Something went wrong, try again!")
+    }
+  })
+})
 app.put('/profile/:id',async function(req, res) {
   let info=req.body
   const filename="img-"
